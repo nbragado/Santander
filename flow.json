@@ -1,1 +1,287 @@
-[]
+[
+    {
+        "id": "aa8738ff.133988",
+        "type": "tab",
+        "label": "Santander_DEV",
+        "disabled": false,
+        "info": ""
+    },
+    {
+        "id": "f95d2537.afa988",
+        "type": "MSSQL-CN",
+        "name": "Santander DEV",
+        "server": "10.129.5.76",
+        "encyption": false,
+        "database": ""
+    },
+    {
+        "id": "be2d14ae.0afa48",
+        "type": "inject",
+        "z": "aa8738ff.133988",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 100,
+        "y": 40,
+        "wires": [
+            [
+                "dd61d3c0.e36a"
+            ]
+        ]
+    },
+    {
+        "id": "cf71e360.32531",
+        "type": "debug",
+        "z": "aa8738ff.133988",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1310,
+        "y": 60,
+        "wires": []
+    },
+    {
+        "id": "4a28e197.19e3f",
+        "type": "template",
+        "z": "aa8738ff.133988",
+        "name": "Formata Email",
+        "field": "payload",
+        "fieldType": "msg",
+        "format": "handlebars",
+        "syntax": "mustache",
+        "template": "<!DOCTYPE html>\n<html>\n  <head>\n    <meta charset=\"utf-8\">\n    <title>{{title}}</title>\n    <style>\n      /* Add your custom styles here */\n      .header {\n        background-color: #f2f2f2;\n        padding: 20px;\n        text-align: center;\n      }\n      .header img {\n        width: 200px;\n      }\n      .content {\n        background-color: #ffffff;\n        padding: 20px;\n      }\n      .footer {\n        background-color: #f2f2f2;\n        padding: 10px;\n        text-align: center;\n        font-size: 12px;\n      }\n    </style>\n  </head>\n  <body>\n    <div class=\"header\">\n      <img src=\"https://gkpb.com.br/wp-content/uploads/2018/03/novo-logo-santander-fundo-vermelho.jpg\" alt=\"Logo\">\n      <h1>{{header}}</h1>\n    </div>\n    <div class=\"content\">\n      <p>Dear {{to}},</p>\n      <p>{{body}}</p>\n      {{#items}}\n        <p><b>{{.}}</b></p>\n      {{/items}}\n      <p>Best regards,</p>\n      <p>{{sender}}</p>\n    </div>\n    <div class=\"footer\">\n      <p>This is an automated email. Please do not reply to this address.</p>\n    </div>\n  </body>\n</html>\n",
+        "output": "str",
+        "x": 880,
+        "y": 180,
+        "wires": [
+            [
+                "1bac1bf3.0dcdd4"
+            ]
+        ]
+    },
+    {
+        "id": "a304f160.d37b8",
+        "type": "function",
+        "z": "aa8738ff.133988",
+        "name": "Extrai SMS a enviar",
+        "func": "var sms = msg.payload.sms;\nmsg.to = sms;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "x": 670,
+        "y": 280,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "809cc972.b5ee88",
+        "type": "split",
+        "z": "aa8738ff.133988",
+        "name": "Split EMAIL",
+        "splt": "email",
+        "spltType": "str",
+        "arraySplt": 1,
+        "arraySpltType": "len",
+        "stream": false,
+        "addname": "",
+        "x": 470,
+        "y": 180,
+        "wires": [
+            [
+                "462311b3.04f8b"
+            ]
+        ]
+    },
+    {
+        "id": "462311b3.04f8b",
+        "type": "function",
+        "z": "aa8738ff.133988",
+        "name": "Extrai Email a enviar",
+        "func": "var email = msg.payload.email;\nmsg.to = email;\n\n\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "x": 680,
+        "y": 180,
+        "wires": [
+            [
+                "4a28e197.19e3f"
+            ]
+        ]
+    },
+    {
+        "id": "1bac1bf3.0dcdd4",
+        "type": "split",
+        "z": "aa8738ff.133988",
+        "name": "Check Válido",
+        "splt": "to:",
+        "spltType": "str",
+        "arraySplt": 1,
+        "arraySpltType": "len",
+        "stream": false,
+        "addname": "",
+        "x": 1090,
+        "y": 180,
+        "wires": [
+            [
+                "cf71e360.32531",
+                "ede78fcd.784f"
+            ]
+        ]
+    },
+    {
+        "id": "c239a91a.9661c8",
+        "type": "split",
+        "z": "aa8738ff.133988",
+        "name": "Split SMS",
+        "splt": "sms",
+        "spltType": "str",
+        "arraySplt": 1,
+        "arraySpltType": "len",
+        "stream": false,
+        "addname": "",
+        "x": 460,
+        "y": 280,
+        "wires": [
+            [
+                "a304f160.d37b8"
+            ]
+        ]
+    },
+    {
+        "id": "dd61d3c0.e36a",
+        "type": "MSSQL",
+        "z": "aa8738ff.133988",
+        "mssqlCN": "f95d2537.afa988",
+        "name": "Liga a Base de Dados  - DEV",
+        "query": "select * from santander_dev.dbo.import",
+        "outField": "payload",
+        "x": 240,
+        "y": 140,
+        "wires": [
+            [
+                "809cc972.b5ee88",
+                "c239a91a.9661c8"
+            ]
+        ]
+    },
+    {
+        "id": "ede78fcd.784f",
+        "type": "e-mail",
+        "z": "aa8738ff.133988",
+        "server": "mail.ohficina.com",
+        "port": "465",
+        "secure": true,
+        "tls": true,
+        "name": "",
+        "dname": "Envia Email DEV",
+        "x": 1340,
+        "y": 180,
+        "wires": []
+    },
+    {
+        "id": "a52c95fcfd104091",
+        "type": "file in",
+        "z": "aa8738ff.133988",
+        "name": "",
+        "filename": "/etc/mysecret/mykey",
+        "format": "utf8",
+        "chunk": false,
+        "sendError": false,
+        "encoding": "none",
+        "x": 560,
+        "y": 400,
+        "wires": [
+            [
+                "ef890a1592de92e4"
+            ]
+        ]
+    },
+    {
+        "id": "a6529c4198a9c85f",
+        "type": "inject",
+        "z": "aa8738ff.133988",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 320,
+        "y": 400,
+        "wires": [
+            [
+                "a52c95fcfd104091"
+            ]
+        ]
+    },
+    {
+        "id": "a3c26e052c8c0881",
+        "type": "debug",
+        "z": "aa8738ff.133988",
+        "name": "debug 1",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 980,
+        "y": 400,
+        "wires": []
+    },
+    {
+        "id": "ef890a1592de92e4",
+        "type": "function",
+        "z": "aa8738ff.133988",
+        "name": "Extract Secret",
+        "func": "flow.set(\"mysecret\", msg.payload.toString());\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "x": 780,
+        "y": 400,
+        "wires": [
+            [
+                "a3c26e052c8c0881"
+            ]
+        ]
+    }
+]
